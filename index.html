@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Poolish • Pizza Lab Brasil</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: #f0f0f0; color: #1a1a1a; font-family: -apple-system, sans-serif; min-height: 100vh; padding-bottom: 48px; }
+
+.header { background: #1a1a1a; border-bottom: 3px solid #cc2200; padding: 20px 16px 14px; text-align: center; }
+.logo-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
+.logo-pizza { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: 0.04em; line-height: 1; }
+.logo-lab { color: #1e7a1e; }
+.bandeira { display: flex; height: 3px; width: 180px; margin: 8px auto 10px; border-radius: 2px; overflow: hidden; }
+.bandeira .v { flex: 1; background: #1e7a1e; }
+.bandeira .b { flex: 1; background: #fff; }
+.bandeira .r { flex: 1; background: #cc2200; }
+.header-sub { font-size: 10px; letter-spacing: 0.2em; color: #666; text-transform: uppercase; }
+
+.main { max-width: 600px; margin: 0 auto; padding: 24px 14px 0; }
+.calc-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.28em; color: #cc2200; text-transform: uppercase; text-align: center; margin-bottom: 5px; }
+.calc-title { font-size: 20px; font-weight: 800; color: #1a1a1a; text-align: center; letter-spacing: 0.04em; margin-bottom: 6px; }
+.calc-desc { font-size: 12px; color: #999; text-align: center; line-height: 1.6; margin-bottom: 22px; }
+
+.card { background: #fff; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+.card-head { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 11px 16px; display: flex; align-items: center; gap: 8px; }
+.card-head-label { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #888; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; }
+.ctrl { padding: 16px; border-right: 1px solid #eee; border-bottom: 1px solid #eee; background: #fff; }
+.ctrl:nth-child(even) { border-right: none; }
+.ctrl:nth-last-child(-n+2) { border-bottom: none; }
+.ctrl.full { grid-column: 1 / -1; border-right: none; }
+.ctrl-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #999; margin-bottom: 8px; }
+.ctrl-val { font-size: 30px; font-weight: 800; color: #1a1a1a; line-height: 1; margin-bottom: 4px; }
+.ctrl-val span { font-size: 14px; font-weight: 400; color: #999; }
+.ctrl-nota { font-size: 10px; color: #aaa; margin-bottom: 10px; min-height: 14px; line-height: 1.4; }
+
+.pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.pill { padding: 6px 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #999; cursor: pointer; text-transform: uppercase; transition: all 0.15s; }
+.pill.on { background: #cc2200; border-color: #cc2200; color: #fff; }
+
+.stepper { display: flex; align-items: center; }
+.step-btn { width: 38px; height: 38px; background: #f5f5f5; border: 1px solid #ddd; color: #1a1a1a; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 300; }
+.step-btn:first-child { border-radius: 3px 0 0 3px; }
+.step-btn:last-child { border-radius: 0 3px 3px 0; }
+.step-btn:active { background: #cc2200; border-color: #cc2200; color: #fff; }
+.step-count { font-size: 20px; font-weight: 800; color: #1a1a1a; width: 48px; height: 38px; display: flex; align-items: center; justify-content: center; background: #f5f5f5; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
+
+/* Resultado */
+.res-head { background: #f5f5f5; border-bottom: 2px solid #cc2200; padding: 12px 16px; }
+.res-head-title { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #888; }
+.res-head-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+.secao { background: #f9f9f9; border-bottom: 1px solid #eee; padding: 10px 16px 6px; }
+.secao-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa; }
+
+.ing-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
+.ing-row:last-child { border-bottom: none; }
+.ing-nome { font-size: 13px; color: #888; }
+.ing-val { font-size: 22px; font-weight: 800; color: #1a1a1a; text-align: right; }
+.ing-val span { font-size: 11px; font-weight: 400; color: #aaa; margin-left: 2px; }
+.ing-sub { font-size: 10px; color: #bbb; text-align: right; margin-top: 1px; }
+
+.total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(204,34,0,0.05); border-top: 1px solid rgba(204,34,0,0.15); }
+.total-label { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; }
+.total-sub-label { font-size: 10px; color: #bbb; margin-top: 2px; }
+.total-val { font-size: 26px; font-weight: 800; color: #cc2200; }
+.total-val span { font-size: 13px; font-weight: 400; color: #aaa; margin-left: 2px; }
+
+/* Info box verde */
+.info-box { background: #fff; border: 1px solid #ddd; border-left: 3px solid #1e7a1e; border-radius: 4px; padding: 14px 16px; font-size: 13px; color: #666; line-height: 1.65; margin-bottom: 14px; }
+.info-box strong { color: #1a1a1a; }
+
+/* Passo a passo */
+.jornada-head { background: #f5f5f5; border-bottom: 2px solid #1e7a1e; padding: 12px 16px; }
+.jornada-head-title { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #888; }
+.jornada-head-sub { font-size: 12px; color: #aaa; margin-top: 3px; }
+
+.step-item { display: flex; gap: 14px; padding: 16px; border-bottom: 1px solid #f0f0f0; align-items: flex-start; }
+.step-item:last-child { border-bottom: none; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: #1e7a1e; color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.step-body { flex: 1; }
+.step-quando { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #1e7a1e; margin-bottom: 3px; }
+.step-titulo { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 5px; }
+.step-desc { font-size: 12px; color: #888; line-height: 1.6; }
+
+/* Redes */
+.social-head { background: #f5f5f5; border-bottom: 2px solid #cc2200; padding: 12px 16px; }
+.social-head-title { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #888; }
+.social-link { display: flex; align-items: center; gap: 14px; padding: 16px; border-bottom: 1px solid #f0f0f0; text-decoration: none; }
+.social-link:last-child { border-bottom: none; }
+.social-link:active { background: #fafafa; }
+.social-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.social-icon.yt { background: #cc2200; color: #fff; }
+.social-icon.tt { background: #1a1a1a; color: #fff; }
+.social-nome { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
+.social-handle { font-size: 12px; color: #aaa; }
+.social-arrow { color: #ccc; font-size: 18px; margin-left: auto; }
+
+.footer { text-align: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid #ddd; }
+.footer-logo { font-size: 15px; font-weight: 800; color: #bbb; letter-spacing: 0.1em; }
+.footer-logo span { color: #1e7a1e; }
+.footer-tag { font-size: 11px; color: #bbb; font-style: italic; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-row">
+    <div class="logo-pizza">🧪🍕 PIZZA <span class="logo-lab">LAB</span> BRASIL 🇧🇷</div>
+  </div>
+  <div class="bandeira"><div class="v"></div><div class="b"></div><div class="r"></div></div>
+  <div class="header-sub">Testes · Fermentação · Técnica · Evolução</div>
+</div>
+
+<div class="main">
+  <div class="calc-eyebrow">Pré-fermento</div>
+  <div class="calc-title">CALCULADORA DE POOLISH</div>
+  <div class="calc-desc">O Poolish é um pré-fermento líquido (hidratação 100%) que confere sabor mais complexo, leveza e melhor digestibilidade à massa. Ideal para fermentações de 12 a 16 horas.</div>
+
+  <!-- VÍDEOS -->
+  <div class="card">
+    <div class="card-head" style="border-bottom-color:#1e7a1e; background:#f5f5f5">
+      <span>🎬</span>
+      <span class="card-head-label">Aprenda a fazer o Poolish</span>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; background:#fff;">
+      <div style="padding:14px; border-right:1px solid #eee;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#cc2200;margin-bottom:8px;">▶ YouTube</div>
+        <div style="position:relative;padding-bottom:177%;height:0;overflow:hidden;border-radius:6px;background:#000;">
+          <iframe
+            src="https://www.youtube.com/embed/yKz8BV-xFYI"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+      <div style="padding:14px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#1a1a1a;margin-bottom:8px;">♪ TikTok</div>
+        <div style="position:relative;padding-bottom:177%;height:0;overflow:hidden;border-radius:6px;background:#000;">
+          <iframe
+            src="https://www.tiktok.com/embed/ZSXXh45oU"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+            allow="autoplay"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLES -->
+  <div class="card">
+    <div class="card-head"><span>⚙️</span><span class="card-head-label">Parâmetros</span></div>
+    <div class="grid">
+
+      <div class="ctrl">
+        <div class="ctrl-label">Tamanho da Pizza</div>
+        <div class="ctrl-val" id="v-tam">30 <span>cm</span></div>
+        <div class="ctrl-nota" id="nota-tam">Padrão ouro da tradição napolitana</div>
+        <div class="pills">
+          <div class="pill" onclick="sel('tam',26,this)">26</div>
+          <div class="pill" onclick="sel('tam',29,this)">29</div>
+          <div class="pill on" onclick="sel('tam',30,this)">30</div>
+          <div class="pill" onclick="sel('tam',33,this)">33</div>
+          <div class="pill" onclick="sel('tam',36,this)">36</div>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-label">% de Poolish</div>
+        <div class="ctrl-val" id="v-pct">30 <span>%</span></div>
+        <div class="ctrl-nota" id="nota-pct">Equilíbrio entre sabor e praticidade</div>
+        <div class="pills">
+          <div class="pill" onclick="sel('pct',20,this)">20%</div>
+          <div class="pill on" onclick="sel('pct',30,this)">30%</div>
+          <div class="pill" onclick="sel('pct',40,this)">40%</div>
+          <div class="pill" onclick="sel('pct',50,this)">50%</div>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-label">Quantidade de Pizzas</div>
+        <div class="ctrl-val" id="v-qtd">1 <span>pizza</span></div>
+        <div class="ctrl-nota">&nbsp;</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="adj(-1)">−</button>
+          <div class="step-count" id="sc">1</div>
+          <button class="step-btn" onclick="adj(1)">+</button>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-label">Hidratação Final</div>
+        <div class="ctrl-val" id="v-hid">65 <span>%</span></div>
+        <div class="ctrl-nota">&nbsp;</div>
+        <div class="pills">
+          <div class="pill" onclick="sel('hid',60,this)">60%</div>
+          <div class="pill" onclick="sel('hid',62,this)">62%</div>
+          <div class="pill on" onclick="sel('hid',65,this)">65%</div>
+          <div class="pill" onclick="sel('hid',68,this)">68%</div>
+          <div class="pill" onclick="sel('hid',70,this)">70%</div>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-label">Fermentação do Poolish</div>
+        <div class="ctrl-val" id="v-tferm">12 <span>h</span></div>
+        <div class="ctrl-nota" id="nota-tferm">Temperatura ambiente ~22°C</div>
+        <div class="pills">
+          <div class="pill" onclick="sel('tferm',8,this)">8h</div>
+          <div class="pill on" onclick="sel('tferm',12,this)">12h</div>
+          <div class="pill" onclick="sel('tferm',16,this)">16h</div>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-label">Fermentação Final</div>
+        <div class="ctrl-val" id="v-fferm">1 <span>dia</span></div>
+        <div class="ctrl-nota">&nbsp;</div>
+        <div class="pills">
+          <div class="pill on" onclick="sel('fferm',1,this)">1 dia</div>
+          <div class="pill" onclick="sel('fferm',2,this)">2 dias</div>
+          <div class="pill" onclick="sel('fferm',3,this)">3 dias</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="card">
+    <div class="res-head">
+      <div class="res-head-title">Ingredientes</div>
+      <div class="res-head-sub" id="res-sub">por bola de massa</div>
+    </div>
+
+    <!-- POOLISH -->
+    <div class="secao"><span class="secao-label">🌙 Etapa 1 — Poolish (prepare à noite)</span></div>
+    <div id="lista-poolish"></div>
+
+    <!-- MASSA FINAL -->
+    <div class="secao" style="border-top:1px solid #eee"><span class="secao-label">🥣 Etapa 2 — Massa Final (adicione no dia seguinte)</span></div>
+    <div id="lista-massa"></div>
+
+    <div class="total-row">
+      <div>
+        <div class="total-label">Total de Massa</div>
+        <div class="total-sub-label" id="total-sub"></div>
+      </div>
+      <span class="total-val" id="total-val">—<span> g</span></span>
+    </div>
+  </div>
+
+  <!-- DICA -->
+  <div class="info-box" id="info-box"></div>
+
+  <!-- PASSO A PASSO -->
+  <div class="card">
+    <div class="jornada-head">
+      <div class="jornada-head-title">🧪 Como Fazer o Poolish</div>
+      <div class="jornada-head-sub">Passo a passo completo</div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-quando">À noite · preparar o poolish</div>
+        <div class="step-titulo">🌙 Misturar o Poolish</div>
+        <div class="step-desc">Misture a farinha do poolish com a água (mesma quantidade em gramas — hidratação 100%). Adicione o fermento e misture bem até não restar grumos. Cubra com filme plástico e deixe em temperatura ambiente.</div>
+      </div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-quando">8 a 16 horas depois</div>
+        <div class="step-titulo">📈 Checar o Poolish</div>
+        <div class="step-desc">O poolish está pronto quando dobrou de volume e a superfície está cheia de bolhas. O centro deve começar a afundar levemente — esse é o ponto ideal. Se ainda não chegou lá, aguarde mais um pouco.</div>
+      </div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-quando">Massa final</div>
+        <div class="step-titulo">🥣 Incorporar na Massa</div>
+        <div class="step-desc">Dissolva o sal na água restante. Adicione o poolish e misture. Incorpore a farinha restante aos poucos. Sove até a massa ficar lisa e elástica — o poolish já faz boa parte do trabalho.</div>
+      </div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-quando">Descanso e boleamento</div>
+        <div class="step-titulo">👐 Fermentação Final e Bolas</div>
+        <div class="step-desc">Deixe a massa descansar 30 minutos coberta. Depois faça as dobras (stretch and fold) a cada 30 minutos por 2h. Boleie e leve à geladeira pelo tempo escolhido. Retire 2–3h antes de abrir.</div>
+      </div>
+    </div>
+
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-quando">Hora do show</div>
+        <div class="step-titulo">🔥 Abrir e Assar</div>
+        <div class="step-desc">Abra com as mãos — nunca use rolo. A massa com poolish é mais extensível e abre com facilidade. Use semolina na superfície. Asse a 250°C no doméstico ou 450–500°C no forno a lenha.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VÍDEOS -->
+  <div class="card">
+    <div class="social-head" style="border-bottom-color:#1e7a1e">
+      <div class="social-head-title">🎬 Aprenda na Prática — Vídeos do Poolish</div>
+    </div>
+    <a class="social-link" href="https://youtube.com/shorts/yKz8BV-xFYI?is=Yu9szwxvFMCX1U6O" target="_blank">
+      <div class="social-icon yt">▶</div>
+      <div>
+        <div class="social-nome">Ver no YouTube</div>
+        <div class="social-handle">Como fazer Poolish — Pizza Lab Brasil</div>
+      </div>
+      <div class="social-arrow">›</div>
+    </a>
+    <a class="social-link" href="https://vt.tiktok.com/ZSXXh45oU/" target="_blank">
+      <div class="social-icon tt">♪</div>
+      <div>
+        <div class="social-nome">Ver no TikTok</div>
+        <div class="social-handle">Como fazer Poolish — Pizza Lab Brasil</div>
+      </div>
+      <div class="social-arrow">›</div>
+    </a>
+  </div>
+
+  <!-- REDES -->
+  <div class="card">
+    <div class="social-head">
+      <div class="social-head-title">📲 Siga o Pizza Lab Brasil</div>
+    </div>
+    <a class="social-link" href="https://www.youtube.com/@pizzalabbrasil" target="_blank">
+      <div class="social-icon yt">▶</div>
+      <div>
+        <div class="social-nome">YouTube</div>
+        <div class="social-handle">@pizzalabbrasil</div>
+      </div>
+      <div class="social-arrow">›</div>
+    </a>
+    <a class="social-link" href="https://www.tiktok.com/@pizzalabbrasil" target="_blank">
+      <div class="social-icon tt">♪</div>
+      <div>
+        <div class="social-nome">TikTok</div>
+        <div class="social-handle">@pizzalabbrasil</div>
+      </div>
+      <div class="social-arrow">›</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <div class="footer-logo">PIZZA <span>LAB</span> BRASIL</div>
+    <div class="footer-tag">A busca pela pizza perfeita é um processo.</div>
+  </div>
+</div>
+
+<script>
+var p = { tam: 30, pct: 30, qtd: 1, hid: 65, tferm: 12, fferm: 1 };
+
+var CONFIG = {
+  26: { peso: 185, nota: 'Massa leve, menor que o padrão clássico' },
+  29: { peso: 235, nota: 'Tamanho individual mais comum nas pizzarias' },
+  30: { peso: 250, nota: 'Padrão ouro da tradição napolitana' },
+  33: { peso: 300, nota: 'Tamanho intermediário, acima do padrão AVPN' },
+  36: { peso: 355, nota: 'Tamanho grande, fora do padrão individual AVPN' },
+};
+
+var PCT_NOTA = {
+  20: 'Toque sutil de sabor, massa mais simples',
+  30: 'Equilíbrio entre sabor e praticidade',
+  40: 'Sabor pronunciado, alveolagem maior',
+  50: 'Máximo sabor — nível avançado',
+};
+
+var TFERM_NOTA = {
+  8:  'Fermentação rápida — mais fermento necessário',
+  12: 'Temperatura ambiente ~22°C',
+  16: 'Fermentação longa — sabor mais complexo',
+};
+
+// Fermento no poolish por tempo de fermentação (% sobre farinha do poolish)
+var FERM_POOLISH = { 8: 0.5, 12: 0.2, 16: 0.05 };
+// Fermento na massa final por dias
+var FERM_FINAL = { 1: 0.10, 2: 0.05, 3: 0.02 };
+
+function sel(campo, val, el) {
+  p[campo] = val;
+  el.parentNode.querySelectorAll('.pill').forEach(function(x){ x.classList.remove('on'); });
+  el.classList.add('on');
+  calc();
+}
+function adj(d) {
+  p.qtd = Math.max(1, Math.min(20, p.qtd + d));
+  calc();
+}
+
+function ing(nome, bola, total, multi) {
+  if (multi) {
+    return '<div class="ing-row"><span class="ing-nome">'+nome+'</span>'
+      +'<div style="text-align:right">'
+      +'<div class="ing-val">'+total+'<span> g</span></div>'
+      +'<div class="ing-sub">'+bola+' g por bola</div>'
+      +'</div></div>';
+  }
+  return '<div class="ing-row"><span class="ing-nome">'+nome+'</span>'
+    +'<div class="ing-val">'+bola+'<span> g</span></div></div>';
+}
+
+function calc() {
+  var cfg = CONFIG[p.tam] || CONFIG[30];
+  var peso = cfg.peso;
+  var qtd = p.qtd;
+  var multi = qtd > 1;
+
+  // Farinha total por bola
+  var sal_perc = 2.8;
+  var fp_poolish = FERM_POOLISH[p.tferm] || 0.2;
+  var fp_final = FERM_FINAL[p.fferm] || 0.05;
+  var fator = 1 + p.hid/100 + sal_perc/100 + fp_final/100;
+  var farTotal = Math.round(peso / fator);
+
+  // Poolish: % da farinha total vai pro poolish (hidratação 100% = farinha = água)
+  var farPoolish = Math.round(farTotal * p.pct / 100);
+  var aguaPoolish = farPoolish; // hidratação 100%
+  var fermPoolish = Math.round(farPoolish * fp_poolish / 100 * 100) / 100;
+
+  // Massa final
+  var farFinal = farTotal - farPoolish;
+  var aguaTotal = Math.round(farTotal * p.hid / 100);
+  var aguaFinal = aguaTotal - aguaPoolish;
+  var sal = Math.round(farTotal * sal_perc / 100 * 10) / 10;
+  var fermFinal = Math.round(farTotal * fp_final / 100 * 100) / 100;
+
+  var totBola = Math.round(farTotal + aguaTotal + sal + fermPoolish + fermFinal);
+  var totGeral = totBola * qtd;
+
+  // Labels
+  document.getElementById('v-tam').innerHTML = p.tam + ' <span>cm</span>';
+  document.getElementById('nota-tam').textContent = cfg.nota;
+  document.getElementById('v-pct').innerHTML = p.pct + ' <span>%</span>';
+  document.getElementById('nota-pct').textContent = PCT_NOTA[p.pct] || '';
+  document.getElementById('v-qtd').innerHTML = qtd + ' <span>' + (qtd===1?'pizza':'pizzas') + '</span>';
+  document.getElementById('sc').textContent = qtd;
+  document.getElementById('v-hid').innerHTML = p.hid + ' <span>%</span>';
+  document.getElementById('v-tferm').innerHTML = p.tferm + ' <span>h</span>';
+  document.getElementById('nota-tferm').textContent = TFERM_NOTA[p.tferm] || '';
+  document.getElementById('v-fferm').innerHTML = p.fferm + ' <span>' + (p.fferm===1?'dia':'dias') + '</span>';
+  document.getElementById('res-sub').textContent = multi
+    ? qtd + ' bolas · ' + totBola + ' g cada'
+    : 'por bola de massa · ' + peso + ' g alvo';
+
+  // Poolish
+  document.getElementById('lista-poolish').innerHTML =
+    ing('Farinha 00', farPoolish, farPoolish*qtd, multi) +
+    ing('Água', aguaPoolish, aguaPoolish*qtd, multi) +
+    ing('Fermento biológico seco', fermPoolish, Math.round(fermPoolish*qtd*100)/100, multi);
+
+  // Massa final
+  document.getElementById('lista-massa').innerHTML =
+    ing('Farinha 00 (restante)', farFinal, farFinal*qtd, multi) +
+    ing('Água (restante)', aguaFinal < 0 ? 0 : aguaFinal, aguaFinal < 0 ? 0 : aguaFinal*qtd, multi) +
+    ing('Sal', sal, Math.round(sal*qtd*10)/10, multi) +
+    ing('Fermento biológico seco', fermFinal, Math.round(fermFinal*qtd*100)/100, multi) +
+    ing('+ Poolish pronto', farPoolish+aguaPoolish, (farPoolish+aguaPoolish)*qtd, multi);
+
+  // Total
+  document.getElementById('total-val').innerHTML = (multi ? totGeral : totBola) + '<span> g</span>';
+  document.getElementById('total-sub').textContent = multi
+    ? totBola + ' g por bola × ' + qtd
+    : 'bola de ' + p.tam + ' cm';
+
+  // Info box
+  var hTotal = p.tferm + (p.fferm * 24);
+  document.getElementById('info-box').innerHTML =
+    '<strong>Tempo total de processo: ~' + hTotal + ' horas</strong><br>' +
+    'Prepare o poolish ' + p.tferm + 'h antes de montar a massa. ' +
+    'Após incorporar, a massa ainda fermenta por ' + p.fferm + ' ' + (p.fferm===1?'dia':'dias') + ' na geladeira. ' +
+    'O poolish de ' + p.pct + '% da farinha garante ' + PCT_NOTA[p.pct].toLowerCase() + '.';
+}
+
+calc();
+</script>
+</body>
+</html>
